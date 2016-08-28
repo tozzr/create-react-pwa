@@ -1,8 +1,11 @@
-import {observable, action, toJS} from 'mobx';
+import {action, computed, observable, toJS} from 'mobx'
 
 class RequirementStore {
 
-  requirements = observable([])
+  serviceUrl = 'http://localhost:8080/requirements'
+
+  _requirements = observable([])
+  loaded = false
   
   requirementForm = observable({
     system: 0,
@@ -12,13 +15,31 @@ class RequirementStore {
     processword: ""
   })
 
-  add = action(() => {
-    this.requirements.push(toJS(this.requirementForm))
-  })
+  @computed get requirements() {
+      if (!this.loaded)
+        fetch(this.serviceUrl)
+        .then((res) => {
+          return res.json()
+        })
+        .then((values) => {
+          values.map(v => {
+            return this._requirements.push(v)
+          })
+        })
+        .catch(function(error) {
+          console.log('There has been a problem with your fetch operation: ' + error.message);
+        })
+      this.loaded = true
+      return this._requirements
+  }
 
-  remove = action((index) => {
-      this.requirements.splice(index, 1)
-  })
+  @action add() {
+    this._requirements.push(toJS(this.requirementForm))
+  }
+
+  @action remove(index) {
+    this._requirements.splice(index, 1)
+  }
 
   options = {
     system: [{value: 0, label: 'Das System'}, {value: 1, label: '<Name des Systems>'}],

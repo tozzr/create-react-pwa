@@ -8,7 +8,7 @@ import './App.css'
 class App extends Component {
 
   render() {
-    let reqs = this.props.store.requirements;    
+    const reqs = this.props.store.requirements
     return (
       <div className="App">
         <div className="App-header">
@@ -18,6 +18,7 @@ class App extends Component {
         <p className="App-intro">
           Requirements made easy.
         </p>
+        { 'Anforderungen: ' + reqs.length }
         {
           reqs.map((r, index) => {              
             return (
